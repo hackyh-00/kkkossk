@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "etl": "node index"
+    "etl": "node etl"
   },
   "dependencies": {
     "aws-sdk": "^2.1383.0",

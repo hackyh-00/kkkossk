@@ -43,22 +43,20 @@ module.exports.savePostsWithImage = async (data) => {
   await save25Items(data, "instagram_processed");
 };
 
-
 const getData = async (TableName) => {
   const params = {
     TableName,
-    Limit: 20
   };
 
   return documentClient.scan(params).promise();
-}
+};
 
 module.exports.getPosts = async () => {
-  return getData("instagram")
+  return getData("instagram");
 };
 
 module.exports.getPostsWithImage = async () => {
-  return getData("instagram_processed")
+  return getData("instagram_processed");
 };
 
 module.exports.deletePost = async (id, taken_at_timestamp) => {

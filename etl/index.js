@@ -41,4 +41,4 @@ async function ETL() {
   await savePosts(posts);
 }
 
-module.exports = ETL;
+ETL()
