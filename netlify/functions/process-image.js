@@ -6,6 +6,11 @@ const {
 const { uploadImage } = require("../../support/cloudinary");
 
 exports.handler = async function (event, _context) {
+  if (!process.env.ENABLE_CRON) {
+    console.log("processing disabled");
+    return;
+  }
+
   const { post: oldestPost, count } = await getPost();
   if (count === 0) {
     console.log("0 posts, this should not happen");
