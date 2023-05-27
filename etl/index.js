@@ -22,7 +22,6 @@ function transform(response) {
   return response.data.hashtag.edge_hashtag_to_media.edges.map((item) => ({
     id: item.node.id,
     taken_at_timestamp: item.node.taken_at_timestamp,
-    content: JSON.stringify(item.node),
     url: item.node.display_url,
     likes: item.node.edge_liked_by.count,
     caption: item.node.edge_media_to_caption?.edges[0]?.node.text,
