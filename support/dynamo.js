@@ -93,3 +93,22 @@ module.exports.deletePost = async (id, taken_at_timestamp) => {
 
   return documentClient.delete(params).promise();
 };
+
+module.exports.saveSwipe = async (post_id, user_uuid, swipe) => {
+  if (!post_id || !user_uuid) {
+    console.log('swipe not saved, empty data');
+    return
+  }
+
+  await documentClient.put({
+    Item: {
+      post_id,
+      user_uuid,
+      swipe,
+      created_at: new Date().getTime(),
+    },
+    TableName: "instagram_swipe",
+  }).promise();
+
+  return true
+};
