@@ -8,16 +8,10 @@ exports.handler = async function (event, _context) {
   if (!saved) {
     return {
       statusCode: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
     };
   }
 
   return {
     statusCode: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
   };
 };

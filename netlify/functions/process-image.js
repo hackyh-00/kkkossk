@@ -9,12 +9,16 @@ exports.handler = async function (event, _context) {
   const { post: oldestPost, count } = await getPost();
   if (count === 0) {
     console.log("0 posts, this should not happen");
-    return;
+    return {
+      statusCode: 400,
+    };
   }
 
   if (count === 1) {
     console.log(`only one post, processing skipped`);
-    return;
+    return {
+      statusCode: 400,
+    };
   }
 
   let response;
@@ -42,9 +46,5 @@ exports.handler = async function (event, _context) {
 
   return {
     statusCode: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: "✔️",
   };
 };
