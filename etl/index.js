@@ -34,8 +34,10 @@ function transform(response) {
 }
 
 async function getNewPost(posts) {
-  const newestPost = await getPost("newest");
+  const { post: newestPost } = await getPost("newest");
+
   if (!newestPost) {
+    console.warn("0 posts, this should not happen");
     return posts;
   }
 

@@ -69,11 +69,13 @@ async function getSortedPosts() {
 module.exports.getPost = async (sort) => {
   const sortedPosts = await getSortedPosts();
 
-  if (sort === "newest") {
-    return sortedPosts[sortedPosts.length - 1];
-  }
+  const post =
+    sort === "newest" ? sortedPosts[sortedPosts.length - 1] : sortedPosts[0];
 
-  return sortedPosts[0];
+  return {
+    post,
+    count: sortedPosts.length,
+  };
 };
 
 module.exports.getPostsWithImage = async () => {

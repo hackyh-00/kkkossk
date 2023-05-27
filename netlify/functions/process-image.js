@@ -6,8 +6,14 @@ const {
 const { uploadImage } = require("../../support/cloudinary");
 
 exports.handler = async function (event, _context) {
-  const oldestPost = await getPost();
-  if (!oldestPost) {
+  const { post: oldestPost, count } = await getPost();
+  if (count === 0) {
+    console.log("0 posts, this should not happen");
+    return;
+  }
+
+  if (count === 1) {
+    console.log(`only one post, processing skipped`);
     return;
   }
 
