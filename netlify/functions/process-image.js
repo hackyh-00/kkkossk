@@ -1,22 +1,20 @@
 const {
-  getPosts,
+  getPost,
   savePostsWithImage,
   deletePost,
 } = require("../../support/dynamo");
 const { uploadImage } = require("../../support/cloudinary");
 
 exports.handler = async function (event, _context) {
-  const results = await getPosts();
-  if (!Array.isArray(results.Items) || !results.Items.length) {
+  const oldestPost = await getPost();
+  if (!oldestPost) {
     return;
   }
-
-  const firstPost = results.Items[0];
 
   let response;
 
   try {
-    response = await uploadImage(firstPost.url);
+    response = await uploadImage(oldestPost.url);
   } catch (error) {
     console.log(error);
   }
@@ -24,7 +22,7 @@ exports.handler = async function (event, _context) {
   if (response) {
     const data = [
       {
-        ...firstPost,
+        ...oldestPost,
         secure_url: response.secure_url,
         asset_id: response.asset_id,
         public_id: response.public_id,
@@ -34,7 +32,7 @@ exports.handler = async function (event, _context) {
     await savePostsWithImage(data, "instagram_processed");
   }
 
-  await deletePost(firstPost.id, firstPost.taken_at_timestamp);
+  await deletePost(oldestPost.id, oldestPost.taken_at_timestamp);
 
   return {
     statusCode: 200,

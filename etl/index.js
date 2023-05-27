@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-const { savePosts } = require("../support/dynamo");
+const { savePosts, getPost } = require("../support/dynamo");
 
 async function load() {
   const url =
@@ -33,12 +33,31 @@ function transform(response) {
   }));
 }
 
+async function getNewPost(posts) {
+  const newestPost = await getPost("newest");
+  if (!newestPost) {
+    return posts;
+  }
+
+  const { taken_at_timestamp } = newestPost;
+  console.log(
+    "newest.taken_at",
+    new Date(taken_at_timestamp * 1000),
+    taken_at_timestamp
+  );
+
+  return posts.filter((post) => post.taken_at_timestamp > taken_at_timestamp);
+}
+
 async function ETL() {
   const response = await load();
 
   const posts = transform(response);
+  console.log(`found: ${posts.length} posts`);
+  const newPosts = await getNewPost(posts);
 
-  await savePosts(posts);
+  console.log(`new posts: ${newPosts.length}`);
+  await savePosts(newPosts);
 }
 
-ETL()
+ETL();

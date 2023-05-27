@@ -2,11 +2,13 @@ const AWS = require("aws-sdk");
 
 require("dotenv").config();
 
-AWS.config.update({
+const awsParams = {
   region: "us-east-1",
   accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
-});
+};
+
+AWS.config.update(awsParams);
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
@@ -32,7 +34,7 @@ const save25Items = async (places, tableName) => {
   console.log(`saving into ${tableName} ${batch.length} items`);
   await documentClient.batchWrite(params).promise();
 
-  return save25Items(places.slice(25));
+  return save25Items(places.slice(25), tableName);
 };
 
 module.exports.savePosts = async (data) => {
@@ -43,20 +45,39 @@ module.exports.savePostsWithImage = async (data) => {
   await save25Items(data, "instagram_processed");
 };
 
-const getData = async (TableName) => {
+const getData = async (TableName, Limit) => {
   const params = {
     TableName,
+    Limit,
   };
 
   return documentClient.scan(params).promise();
 };
 
-module.exports.getPosts = async () => {
-  return getData("instagram");
+async function getSortedPosts() {
+  const results = await getData("instagram");
+
+  if (!Array.isArray(results.Items) || !results.Items.length) {
+    return [];
+  }
+
+  return results.Items.sort(
+    (a, b) => a.taken_at_timestamp - b.taken_at_timestamp
+  );
+}
+
+module.exports.getPost = async (sort) => {
+  const sortedPosts = await getSortedPosts();
+
+  if (sort === "newest") {
+    return sortedPosts[sortedPosts.length - 1];
+  }
+
+  return sortedPosts[0];
 };
 
 module.exports.getPostsWithImage = async () => {
-  return getData("instagram_processed");
+  return getData("instagram_processed", 20);
 };
 
 module.exports.deletePost = async (id, taken_at_timestamp) => {
