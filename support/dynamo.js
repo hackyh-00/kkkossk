@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
 
+const { loggerInfo } = require("./log");
+
 require("dotenv").config();
 
 const awsParams = {
@@ -31,7 +33,7 @@ const save25Items = async (places, tableName) => {
     },
   };
 
-  console.log(`saving into ${tableName} ${batch.length} items`);
+  loggerInfo(`saving into ${tableName} ${batch.length} items`);
   await documentClient.batchWrite(params).promise();
 
   return save25Items(places.slice(25), tableName);
@@ -96,19 +98,21 @@ module.exports.deletePost = async (id, taken_at_timestamp) => {
 
 module.exports.saveSwipe = async (post_id, user_uuid, swipe) => {
   if (!post_id || !user_uuid) {
-    console.log('swipe not saved, empty data');
-    return
+    loggerInfo("swipe not saved, empty data");
+    return;
   }
 
-  await documentClient.put({
-    Item: {
-      post_id,
-      user_uuid,
-      swipe,
-      created_at: new Date().getTime(),
-    },
-    TableName: "instagram_swipe",
-  }).promise();
+  await documentClient
+    .put({
+      Item: {
+        post_id,
+        user_uuid,
+        swipe,
+        created_at: new Date().getTime(),
+      },
+      TableName: "instagram_swipe",
+    })
+    .promise();
 
-  return true
+  return true;
 };

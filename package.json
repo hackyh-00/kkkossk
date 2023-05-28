@@ -10,6 +10,7 @@
     "etl": "node etl"
   },
   "dependencies": {
+    "@logtail/node": "^0.4.0",
     "aws-sdk": "^2.1383.0",
     "cloudinary": "^1.37.0",
     "dotenv": "^16.0.3",

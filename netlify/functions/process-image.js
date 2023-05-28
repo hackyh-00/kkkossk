@@ -4,23 +4,24 @@ const {
   deletePost,
 } = require("../../support/dynamo");
 const { uploadImage } = require("../../support/cloudinary");
+const { loggerInfo } = require("../../support/log");
 
 exports.handler = async function (event, _context) {
   if (!process.env.ENABLE_CRON) {
-    console.log("processing disabled");
+    loggerInfo("processing disabled");
     return;
   }
 
   const { post: oldestPost, count } = await getPost();
   if (count === 0) {
-    console.log("0 posts, this should not happen");
+    loggerInfo("0 posts, this should not happen");
     return {
       statusCode: 400,
     };
   }
 
   if (count === 1) {
-    console.log(`only one post, processing skipped`);
+    loggerInfo("only one post, processing skipped");
     return {
       statusCode: 400,
     };
@@ -31,7 +32,7 @@ exports.handler = async function (event, _context) {
   try {
     response = await uploadImage(oldestPost.url);
   } catch (error) {
-    console.log(error);
+    loggerInfo(error);
   }
 
   if (response) {
