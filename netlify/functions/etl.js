@@ -1,4 +1,4 @@
-const runETL = require("../../etl");
+const { runETL } = require("../../etl");
 
 exports.handler = async function (event, _context) {
 
