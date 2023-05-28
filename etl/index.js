@@ -3,12 +3,14 @@ const fetch = require("node-fetch");
 const { savePosts, getPost } = require("../support/dynamo");
 const { loggerInfo } = require("../support/log");
 
+require("dotenv").config();
+
 async function load() {
   const url =
     "https://www.instagram.com/api/v1/tags/logged_out_web_info/?tag_name=valledeguadalupe";
   const headers = {
     "Content-Type": "application/json",
-    "x-ig-app-id": "936619743392459",
+    "x-ig-app-id": process.env.INSTAGRAM_TOKEN,
   };
   const response = await fetch(url, {
     headers,
@@ -62,4 +64,4 @@ async function ETL() {
   await savePosts(newPosts);
 }
 
-ETL();
+module.exports = ETL
