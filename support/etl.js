@@ -1,43 +1,26 @@
-// const fetch = require("node-fetch");
+const fetch = require("node-fetch");
 
-// const { savePosts, getPost } = require("../support/dynamo");
-// const { loggerInfo } = require("../support/log");
+const { savePosts, getPost } = require("../support/dynamo");
+const { loggerInfo } = require("../support/log");
 
-// require("dotenv").config();
+require("dotenv").config();
 
 async function load() {
-  const response = await fetch(
-    "https://www.instagram.com/api/v1/tags/logged_out_web_info/?tag_name=valledeguadalupe",
-    {
-      headers: {
-        accept: "*/*",
-        "accept-language": "en-US,en;q=0.5",
-        "sec-ch-ua":
-          '"Brave";v="113", "Chromium";v="113", "Not-A.Brand";v="24"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"macOS"',
-        "sec-ch-ua-platform-version": '"12.4.0"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "sec-gpc": "1",
-        "x-asbd-id": "129477",
-        "x-csrftoken": "zTPCbRd5mNYtMKgC1kfq3VClzG8WgW7M",
-        "x-ig-app-id": "936619743392459",
-        "x-ig-www-claim": "0",
-        "x-requested-with": "XMLHttpRequest",
-        "x-web-device-id": "257952BE-898E-48B0-A2FE-80C247C2BCC5",
-      },
-      referrer: "https://www.instagram.com/explore/tags/valledeguadalupe/",
-      referrerPolicy: "strict-origin-when-cross-origin",
-      body: null,
-      method: "GET",
-      mode: "cors",
-      credentials: "include",
-    }
-  );
+  const url =
+    "https://www.instagram.com/api/v1/tags/logged_out_web_info/?tag_name=valledeguadalupe";
+  const headers = {
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+    "x-ig-app-id": process.env.INSTAGRAM_TOKEN,
+  };
 
-  console.log(response);
+  const response = await fetch(url, {
+    headers,
+  });
+
+  const body = await response.json();
+
+  return body;
 }
 
 function transform(response) {
@@ -55,17 +38,15 @@ function transform(response) {
 }
 
 async function getNewPost(posts) {
-  // const { post: newestPost } = await getPost("newest");
-  const newestPost = { taken_at_timestamp: 1685293388 };
-  console.log(newestPost);
+  const { post: newestPost } = await getPost("newest");
 
   if (!newestPost) {
-    console.log("0 posts, this should not happen");
+    loggerInfo("0 posts, this should not happen");
     return posts;
   }
 
   const { taken_at_timestamp } = newestPost;
-  console.log(
+  loggerInfo(
     "newest.taken_at",
     new Date(taken_at_timestamp * 1000),
     taken_at_timestamp
@@ -74,13 +55,21 @@ async function getNewPost(posts) {
   return posts.filter((post) => post.taken_at_timestamp > taken_at_timestamp);
 }
 
-export default async function runETL() {
+async function runETL() {
   const response = await load();
 
   const posts = transform(response);
-  console.log(`found: ${posts.length} posts`);
+  loggerInfo(`found: ${posts.length} posts`);
   const newPosts = await getNewPost(posts);
 
-  console.log(`new posts: ${newPosts.length}`);
-  // await savePosts(newPosts);
+  loggerInfo(`new posts: ${newPosts.length}`);
+  await savePosts(newPosts);
+}
+
+async function main() {
+  await runETL();
+}
+
+if (require.main === module) {
+  main();
 }
