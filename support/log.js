@@ -2,10 +2,10 @@ const { Logtail } = require("@logtail/node");
 
 require("dotenv").config();
 
-const logtail = new Logtail(process.env.LOGTAIL_TOKEN);
-
 module.exports.loggerInfo = function (...args) {
   console.log(...args);
+
+  const logtail = new Logtail(process.env.LOGTAIL_TOKEN);
   logtail.info(...args);
-  logtail.flush()
+  logtail.flush();
 };

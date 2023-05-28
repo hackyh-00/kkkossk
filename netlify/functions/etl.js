@@ -1,8 +1,8 @@
-const ETL = require("../../etl");
+const runETL = require("../../etl");
 
 exports.handler = async function (event, _context) {
 
-  await ETL();
+  await runETL();
 
   return {
     statusCode: 200,
