@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
-const { savePosts, getPost } = require("../support/dynamo");
-// const { console.log } = require("../support/log");
+// const { savePosts, getPost } = require("../support/dynamo");
+// const { loggerInfo } = require("../support/log");
 
 require("dotenv").config();
 
@@ -36,7 +36,9 @@ function transform(response) {
 }
 
 async function getNewPost(posts) {
-  const { post: newestPost } = await getPost("newest");
+  // const { post: newestPost } = await getPost("newest");
+  const newestPost = { taken_at_timestamp: 1685293388 };
+  console.log(newestPost);
 
   if (!newestPost) {
     console.log("0 posts, this should not happen");
@@ -61,5 +63,5 @@ module.exports.runETL = async function runETL() {
   const newPosts = await getNewPost(posts);
 
   console.log(`new posts: ${newPosts.length}`);
-  await savePosts(newPosts);
+  // await savePosts(newPosts);
 };
