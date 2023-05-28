@@ -53,7 +53,7 @@ async function getNewPost(posts) {
   return posts.filter((post) => post.taken_at_timestamp > taken_at_timestamp);
 }
 
-exports.runETL = async function runETL() {
+module.exports.runETL = async function runETL() {
   const response = await load();
 
   const posts = transform(response);
