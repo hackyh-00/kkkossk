@@ -10,11 +10,17 @@ async function load() {
     "https://www.instagram.com/api/v1/tags/logged_out_web_info/?tag_name=valledeguadalupe";
   const headers = {
     "Content-Type": "application/json",
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+    "x-asbd-id": "129477",
+    "x-csrftoken": "KIMjkphGAO8buHZaAFTVggkcZWs7y05a",
     "x-ig-app-id": process.env.INSTAGRAM_TOKEN,
+    "x-web-device-id": "42A3B855-4B0F-4CFA-A22B-7693648A6C7C",
   };
   const response = await fetch(url, {
     headers,
   });
+  console.log(response)
 
   const body = await response.json();
 
