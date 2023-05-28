@@ -9,18 +9,20 @@ async function load() {
   const url =
     "https://www.instagram.com/api/v1/tags/logged_out_web_info/?tag_name=valledeguadalupe";
   const headers = {
-    "Content-Type": "application/json",
+    referer: "https://www.instagram.com/explore/tags/valledeguadalupe/",
     "user-agent":
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
     "x-asbd-id": "129477",
     "x-csrftoken": "KIMjkphGAO8buHZaAFTVggkcZWs7y05a",
     "x-ig-app-id": process.env.INSTAGRAM_TOKEN,
+    "x-ig-www-claim": 0,
+    "x-requested-with": "XMLHttpRequest",
     "x-web-device-id": "42A3B855-4B0F-4CFA-A22B-7693648A6C7C",
   };
   const response = await fetch(url, {
     headers,
   });
-  console.log(response)
+  console.log(response);
 
   const body = await response.json();
 
@@ -61,7 +63,7 @@ async function getNewPost(posts) {
   return posts.filter((post) => post.taken_at_timestamp > taken_at_timestamp);
 }
 
-module.exports.runETL = async function runETL() {
+async function runETL() {
   const response = await load();
 
   const posts = transform(response);
@@ -70,4 +72,14 @@ module.exports.runETL = async function runETL() {
 
   console.log(`new posts: ${newPosts.length}`);
   // await savePosts(newPosts);
-};
+}
+
+module.exports.runETL = runETL;
+
+async function main() {
+  await runETL();
+}
+
+if (require.main === module) {
+  main();
+}
