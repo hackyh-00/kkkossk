@@ -1,10 +1,17 @@
 "use client";
 
-export default function Home() {
+import { useEffect } from "react";
 
-  return (
-    <main>
-      😊
-    </main>
-  );
+import runETL from "../support/etl";
+
+export default function Home() {
+  const init = async () => {
+    await runETL();
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  return <main>😊</main>;
 }
