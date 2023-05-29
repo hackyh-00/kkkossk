@@ -9,7 +9,9 @@ const { loggerInfo } = require("../../support/log");
 exports.handler = async function (event, _context) {
   if (!process.env.ENABLE_CRON) {
     loggerInfo("processing disabled");
-    return;
+    return {
+      statusCode: 200,
+    };
   }
 
   const { post: oldestPost, count } = await getPost();
