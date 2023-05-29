@@ -8,7 +8,7 @@ const { loggerInfo } = require("../../support/log");
 
 exports.handler = async function (event, _context) {
   if (!process.env.ENABLE_CRON) {
-    loggerInfo("processing disabled");
+    await loggerInfo("processing disabled");
     return {
       statusCode: 200,
     };
@@ -16,14 +16,14 @@ exports.handler = async function (event, _context) {
 
   const { post: oldestPost, count } = await getPost();
   if (count === 0) {
-    loggerInfo("0 posts, this should not happen");
+    await loggerInfo("0 posts, this should not happen");
     return {
       statusCode: 400,
     };
   }
 
   if (count === 1) {
-    loggerInfo("only one post, processing skipped");
+    await loggerInfo("only one post, processing skipped");
     return {
       statusCode: 400,
     };
@@ -34,7 +34,7 @@ exports.handler = async function (event, _context) {
   try {
     response = await uploadImage(oldestPost.url);
   } catch (error) {
-    loggerInfo(error);
+    await loggerInfo(error);
   }
 
   if (response) {

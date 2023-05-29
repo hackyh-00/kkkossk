@@ -33,7 +33,7 @@ const save25Items = async (places, tableName) => {
     },
   };
 
-  loggerInfo(`saving into ${tableName} ${batch.length} items`);
+  await loggerInfo(`saving into ${tableName} ${batch.length} items`);
   await documentClient.batchWrite(params).promise();
 
   return save25Items(places.slice(25), tableName);
@@ -98,7 +98,7 @@ module.exports.deletePost = async (id, taken_at_timestamp) => {
 
 module.exports.saveSwipe = async (post_id, user_uuid, swipe) => {
   if (!post_id || !user_uuid) {
-    loggerInfo("swipe not saved, empty data");
+    await loggerInfo("swipe not saved, empty data");
     return;
   }
 

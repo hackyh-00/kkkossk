@@ -41,12 +41,12 @@ async function getNewPost(posts) {
   const { post: newestPost } = await getPost("newest");
 
   if (!newestPost) {
-    loggerInfo("0 posts, this should not happen");
+    await loggerInfo("0 posts, this should not happen");
     return posts;
   }
 
   const { taken_at_timestamp } = newestPost;
-  loggerInfo(
+  await loggerInfo(
     "newest.taken_at",
     new Date(taken_at_timestamp * 1000),
     taken_at_timestamp
@@ -59,10 +59,10 @@ async function runETL() {
   const response = await load();
 
   const posts = transform(response);
-  loggerInfo(`found: ${posts.length} posts`);
+  await loggerInfo(`found: ${posts.length} posts`);
   const newPosts = await getNewPost(posts);
 
-  loggerInfo(`new posts: ${newPosts.length}`);
+  await loggerInfo(`new posts: ${newPosts.length}`);
   await savePosts(newPosts);
 }
 
