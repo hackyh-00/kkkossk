@@ -31,7 +31,6 @@ function transform(response) {
     likes: item.node.edge_liked_by.count,
     caption: item.node.edge_media_to_caption?.edges[0]?.node.text,
     comments: item.node.edge_media_to_comment.count,
-    is_video: item.node.is_video,
     owner: item.node.owner.id,
     image: item.node.thumbnail_src,
   }));

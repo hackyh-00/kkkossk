@@ -47,6 +47,17 @@ module.exports.savePostsWithImage = async (data) => {
   await save25Items(data, "instagram_processed");
 };
 
+module.exports.saveClassification = async (data) => {
+  const params = {
+    TableName: "instagram_classified",
+    Item: {
+      ...data,
+    },
+  };
+
+  return documentClient.put(params).promise();
+};
+
 const getData = async (TableName, Limit) => {
   const params = {
     TableName,
@@ -56,20 +67,16 @@ const getData = async (TableName, Limit) => {
   return documentClient.scan(params).promise();
 };
 
-async function getSortedPosts() {
-  const results = await getData("instagram");
+async function getPostSorted(tableName, sort) {
+  const results = await getData(tableName);
 
   if (!Array.isArray(results.Items) || !results.Items.length) {
     return [];
   }
 
-  return results.Items.sort(
+  const sortedPosts = results.Items.sort(
     (a, b) => a.taken_at_timestamp - b.taken_at_timestamp
   );
-}
-
-module.exports.getPost = async (sort) => {
-  const sortedPosts = await getSortedPosts();
 
   const post =
     sort === "newest" ? sortedPosts[sortedPosts.length - 1] : sortedPosts[0];
@@ -78,15 +85,27 @@ module.exports.getPost = async (sort) => {
     post,
     count: sortedPosts.length,
   };
+}
+
+module.exports.getPost = async (sort) => {
+  const postSorted = await getPostSorted("instagram", sort);
+
+  return postSorted;
+};
+
+module.exports.getImage = async (sort) => {
+  const postSorted = await getPostSorted("instagram_processed", sort);
+
+  return postSorted;
 };
 
 module.exports.getPostsWithImage = async () => {
   return getData("instagram_processed", 20);
 };
 
-module.exports.deletePost = async (id, taken_at_timestamp) => {
+const deleteItem = async (tableName, id, taken_at_timestamp) => {
   const params = {
-    TableName: "instagram",
+    TableName: tableName,
     Key: {
       id,
       taken_at_timestamp,
@@ -94,6 +113,14 @@ module.exports.deletePost = async (id, taken_at_timestamp) => {
   };
 
   return documentClient.delete(params).promise();
+};
+
+module.exports.deletePost = async (id, taken_at_timestamp) => {
+  await deleteItem("instagram", id, taken_at_timestamp);
+};
+
+module.exports.deleteProcessed = async (id, taken_at_timestamp) => {
+  await deleteItem("instagram_processed", id, taken_at_timestamp);
 };
 
 module.exports.saveSwipe = async (post_id, user_uuid, swipe) => {
