@@ -4,9 +4,15 @@ const {
   deletePost,
 } = require("../../support/dynamo");
 const { uploadImage } = require("../../support/cloudinary");
-const { loggerInfo } = require("../../support/log");
+const { loggerInfo: loggerInfoHelper } = require("../../support/log");
+
+const loggerInfo = async (...args) => {
+  await loggerInfoHelper("process-image", ...args);
+};
 
 exports.handler = async function (event, _context) {
+  await loggerInfo("\n\n==== start");
+
   if (!process.env.ENABLE_CRON) {
     await loggerInfo("processing disabled");
     return {
@@ -51,6 +57,8 @@ exports.handler = async function (event, _context) {
   }
 
   await deletePost(oldestPost.id, oldestPost.taken_at_timestamp);
+
+  await loggerInfo("==== end\n\n");
 
   return {
     statusCode: 200,

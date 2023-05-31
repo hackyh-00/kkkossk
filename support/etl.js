@@ -1,7 +1,11 @@
 const fetch = require("node-fetch");
 
 const { savePosts, getPost } = require("../support/dynamo");
-const { loggerInfo } = require("../support/log");
+const { loggerInfo: loggerInfoHelper } = require("./log");
+
+const loggerInfo = async (...args) => {
+  await loggerInfoHelper("etl", ...args);
+};
 
 require("dotenv").config();
 

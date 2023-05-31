@@ -1,7 +1,11 @@
 const { getPost, savePosts } = require("../../support/dynamo");
 const fetch = require("node-fetch");
 
-const { loggerInfo } = require("../../support/log");
+const { loggerInfo: loggerInfoHelper } = require("../../support/log");
+
+const loggerInfo = async (...args) => {
+  await loggerInfoHelper("process-post", ...args);
+};
 
 const extract = async () => {
   const url = "https://api.garitacenter.com/ig_recent_posts.json";
@@ -60,6 +64,7 @@ async function getNewPost(posts) {
 }
 
 exports.handler = async function (event, _context) {
+  await loggerInfo("\n\n==== start");
   const body = await extract();
 
   if (
@@ -78,6 +83,8 @@ exports.handler = async function (event, _context) {
 
   await loggerInfo(`new posts: ${newPosts.length}`);
   await savePosts(newPosts);
+
+  await loggerInfo("==== end\n\n");
 
   return {
     statusCode: 200,
