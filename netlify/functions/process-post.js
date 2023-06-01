@@ -25,6 +25,10 @@ const transform = (body) => {
     }
 
     section.layout_content.medias.forEach(({ media }) => {
+      const image = media.image_versions2
+        ? media.image_versions2?.candidates[0]?.url
+        : media.carousel_media[0]?.image_versions2?.candidates[0]?.url;
+
       const post = {
         id: media.id,
         taken_at_timestamp: media.taken_at,
@@ -33,7 +37,7 @@ const transform = (body) => {
         caption: media.caption?.text,
         comments: media.comment_count,
         username: media.user?.username,
-        image: media.image_versions2?.candidates[0]?.url,
+        image,
       };
 
       accu.push(post);

@@ -6,12 +6,12 @@ const {
 const { uploadImage } = require("../../support/cloudinary");
 const { loggerInfo: loggerInfoHelper } = require("../../support/log");
 
-const loggerInfo = async (...args) => {
-  await loggerInfoHelper("process-image", ...args);
+const loggerInfo = async (msg) => {
+  await loggerInfoHelper(`process-image: ${msg}`);
 };
 
 exports.handler = async function (event, _context) {
-  await loggerInfo("\n\n==== start");
+  await loggerInfo("==== start");
 
   if (!process.env.ENABLE_CRON) {
     await loggerInfo("processing disabled");
@@ -37,10 +37,16 @@ exports.handler = async function (event, _context) {
 
   let response;
 
-  try {
-    response = await uploadImage(oldestPost.url);
-  } catch (error) {
-    await loggerInfo(error);
+  if (!oldestPost.image) {
+    await loggerInfo(
+      `ERROR: post without image: ${JSON.stringify(oldestPost)}`
+    );
+  } else {
+    try {
+      response = oldestPost.image && (await uploadImage(oldestPost.image));
+    } catch (error) {
+      await loggerInfo(JSON.stringify(error));
+    }
   }
 
   if (response) {
@@ -53,12 +59,13 @@ exports.handler = async function (event, _context) {
       },
     ];
 
+    await loggerInfo(`updating post: ${oldestPost.id}`);
     await savePostsWithImage(data, "instagram_processed");
   }
 
   await deletePost(oldestPost.id, oldestPost.taken_at_timestamp);
 
-  await loggerInfo("==== end\n\n");
+  await loggerInfo("==== end");
 
   return {
     statusCode: 200,
