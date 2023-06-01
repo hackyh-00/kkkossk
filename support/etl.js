@@ -3,8 +3,8 @@ const fetch = require("node-fetch");
 const { savePosts, getPost } = require("../support/dynamo");
 const { loggerInfo: loggerInfoHelper } = require("./log");
 
-const loggerInfo = async (...args) => {
-  await loggerInfoHelper("etl", ...args);
+const loggerInfo = async (msg) => {
+  await loggerInfoHelper(`etl: ${msg}`);
 };
 
 require("dotenv").config();
@@ -49,11 +49,7 @@ async function getNewPost(posts) {
   }
 
   const { taken_at_timestamp } = newestPost;
-  await loggerInfo(
-    "newest.taken_at",
-    new Date(taken_at_timestamp * 1000),
-    taken_at_timestamp
-  );
+  await loggerInfo(`newest.taken_at: ${new Date(taken_at_timestamp * 1000)}`);
 
   return posts.filter((post) => post.taken_at_timestamp > taken_at_timestamp);
 }

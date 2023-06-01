@@ -2,8 +2,8 @@ const AWS = require("aws-sdk");
 
 const { loggerInfo: loggerInfoHelper } = require("./log");
 
-const loggerInfo = async (...args) => {
-  await loggerInfoHelper("dynamo", ...args);
+const loggerInfo = async (msg) => {
+  await loggerInfoHelper(`dynamo: ${msg}`);
 };
 
 require("dotenv").config();

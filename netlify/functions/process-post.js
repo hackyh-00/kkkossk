@@ -3,8 +3,8 @@ const fetch = require("node-fetch");
 
 const { loggerInfo: loggerInfoHelper } = require("../../support/log");
 
-const loggerInfo = async (...args) => {
-  await loggerInfoHelper("process-post", ...args);
+const loggerInfo = async (msg) => {
+  await loggerInfoHelper(`process-post: ${msg}`);
 };
 
 const extract = async () => {
@@ -58,17 +58,13 @@ async function getNewPost(posts) {
   }
 
   const { taken_at_timestamp } = newestPost;
-  await loggerInfo(
-    "newest.taken_at",
-    new Date(taken_at_timestamp * 1000),
-    taken_at_timestamp
-  );
+  await loggerInfo(`newest.taken_at: ${new Date(taken_at_timestamp * 1000)}`);
 
   return posts.filter((post) => post.taken_at_timestamp > taken_at_timestamp);
 }
 
 exports.handler = async function (event, _context) {
-  await loggerInfo("\n\n==== start");
+  await loggerInfo("==== start");
   const body = await extract();
 
   if (
@@ -88,7 +84,7 @@ exports.handler = async function (event, _context) {
   await loggerInfo(`new posts: ${newPosts.length}`);
   await savePosts(newPosts);
 
-  await loggerInfo("==== end\n\n");
+  await loggerInfo("==== end");
 
   return {
     statusCode: 200,
