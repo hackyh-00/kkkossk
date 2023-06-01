@@ -4,12 +4,12 @@ const fetch = require("node-fetch");
 const { getImage } = require("../../support/dynamo");
 const { loggerInfo: loggerInfoHelper } = require("../../support/log");
 
-const loggerInfo = async (...args) => {
-  await loggerInfoHelper("classify-image", ...args);
+const loggerInfo = async (msg) => {
+  await loggerInfoHelper(`classify-image: ${msg}`);
 };
 
 const downloadImage = async (path) => {
-  loggerInfo("downloading image:", path);
+  loggerInfo(`downloading image: ${path}`);
 
   const response = await fetch(path);
   const imageBuffer = Buffer.from(await response.arrayBuffer());
@@ -20,7 +20,7 @@ const downloadImage = async (path) => {
 };
 
 exports.handler = async function (event, _context) {
-  await loggerInfo("\n\n==== start");
+  await loggerInfo("==== start");
 
   if (!process.env.ENABLE_CRON) {
     await loggerInfo("processing disabled");
@@ -32,7 +32,7 @@ exports.handler = async function (event, _context) {
   const { post: oldestPost, count } = await getImage();
 
   if (count === 0) {
-    await loggerInfo("0 images", oldestPost);
+    await loggerInfo(`0 images`);
 
     return {
       statusCode: 200,
@@ -45,9 +45,9 @@ exports.handler = async function (event, _context) {
     ...oldestPost,
   };
 
-  await loggerInfo("image classified", newPost.id);
+  await loggerInfo(`image classified: ${newPost.id}`);
 
-  await loggerInfo("==== end\n\n");
+  await loggerInfo("==== end");
 
   return {
     statusCode: 200,
