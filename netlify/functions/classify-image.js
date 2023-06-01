@@ -1,12 +1,7 @@
-// const mobilenet = require("@tensorflow-models/mobilenet");
 const tfnode = require("@tensorflow/tfjs-node");
 const fetch = require("node-fetch");
 
-const {
-  getImage,
-  saveClassification,
-  deleteProcessed,
-} = require("../../support/dynamo");
+const { getImage } = require("../../support/dynamo");
 const { loggerInfo: loggerInfoHelper } = require("../../support/log");
 
 const loggerInfo = async (...args) => {
@@ -23,13 +18,6 @@ const downloadImage = async (path) => {
 
   return image;
 };
-
-// const getImageClassification = async (image) => {
-//   const model = await mobilenet.load();
-//   const classification = await model.classify(image);
-
-//   return classification;
-// };
 
 exports.handler = async function (event, _context) {
   await loggerInfo("\n\n==== start");
@@ -51,18 +39,11 @@ exports.handler = async function (event, _context) {
     };
   }
 
-  const image = await downloadImage(oldestPost.secure_url);
-
-  // const classification = await getImageClassification(image);
+  await downloadImage(oldestPost.secure_url);
 
   const newPost = {
     ...oldestPost,
-    // classification,
   };
-
-  // await saveClassification(newPost);
-
-  // await deleteProcessed(newPost.id, newPost.taken_at_timestamp);
 
   await loggerInfo("image classified", newPost.id);
 
