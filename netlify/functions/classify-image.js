@@ -1,4 +1,3 @@
-const tfnode = require("@tensorflow/tfjs-node");
 const fetch = require("node-fetch");
 
 const { getImage } = require("../../support/dynamo");
@@ -14,9 +13,7 @@ const downloadImage = async (path) => {
   const response = await fetch(path);
   const imageBuffer = Buffer.from(await response.arrayBuffer());
 
-  const image = tfnode.node.decodeImage(imageBuffer);
-
-  return image;
+  return imageBuffer;
 };
 
 exports.handler = async function (event, _context) {
