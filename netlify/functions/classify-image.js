@@ -1,4 +1,3 @@
-const tf = require("@tensorflow/tfjs");
 const mobilenet = require("@tensorflow-models/mobilenet");
 const tfnode = require("@tensorflow/tfjs-node");
 const fetch = require("node-fetch");
