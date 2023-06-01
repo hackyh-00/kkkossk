@@ -1,4 +1,4 @@
-const mobilenet = require("@tensorflow-models/mobilenet");
+// const mobilenet = require("@tensorflow-models/mobilenet");
 const tfnode = require("@tensorflow/tfjs-node");
 const fetch = require("node-fetch");
 
@@ -24,12 +24,12 @@ const downloadImage = async (path) => {
   return image;
 };
 
-const getImageClassification = async (image) => {
-  const model = await mobilenet.load();
-  const classification = await model.classify(image);
+// const getImageClassification = async (image) => {
+//   const model = await mobilenet.load();
+//   const classification = await model.classify(image);
 
-  return classification;
-};
+//   return classification;
+// };
 
 exports.handler = async function (event, _context) {
   await loggerInfo("\n\n==== start");
@@ -53,16 +53,16 @@ exports.handler = async function (event, _context) {
 
   const image = await downloadImage(oldestPost.secure_url);
 
-  const classification = await getImageClassification(image);
+  // const classification = await getImageClassification(image);
 
   const newPost = {
     ...oldestPost,
-    classification,
+    // classification,
   };
 
-  await saveClassification(newPost);
+  // await saveClassification(newPost);
 
-  await deleteProcessed(newPost.id, newPost.taken_at_timestamp);
+  // await deleteProcessed(newPost.id, newPost.taken_at_timestamp);
 
   await loggerInfo("image classified", newPost.id);
 
