@@ -18,6 +18,18 @@ AWS.config.update(awsParams);
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
+module.exports.getPostClassified = async (id, taken_at_timestamp) => {
+  const params = {
+    TableName: "instagram_classified",
+    Key: {
+      id,
+      taken_at_timestamp,
+    },
+  };
+
+  return documentClient.get(params).promise();
+};
+
 const save25Items = async (places, tableName) => {
   if (!Array.isArray(places) || !places.length) {
     return;
@@ -54,6 +66,17 @@ module.exports.savePostsWithImage = async (data) => {
 module.exports.saveClassification = async (data) => {
   const params = {
     TableName: "instagram_classified",
+    Item: {
+      ...data,
+    },
+  };
+
+  return documentClient.put(params).promise();
+};
+
+module.exports.savePostPromote = async (data) => {
+  const params = {
+    TableName: "instagram_promote",
     Item: {
       ...data,
     },
@@ -104,7 +127,7 @@ module.exports.getImage = async (sort) => {
 };
 
 module.exports.getPostsWithImage = async () => {
-  return getData("instagram_processed", 20);
+  return getData("instagram_classified", 20);
 };
 
 const deleteItem = async (tableName, id, taken_at_timestamp) => {
@@ -125,6 +148,10 @@ module.exports.deletePost = async (id, taken_at_timestamp) => {
 
 module.exports.deleteProcessed = async (id, taken_at_timestamp) => {
   await deleteItem("instagram_processed", id, taken_at_timestamp);
+};
+
+module.exports.deleteClassified = async (id, taken_at_timestamp) => {
+  await deleteItem("instagram_classified", id, taken_at_timestamp);
 };
 
 module.exports.saveSwipe = async (post_id, user_uuid, swipe) => {

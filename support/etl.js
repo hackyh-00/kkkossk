@@ -37,6 +37,7 @@ function transform(response) {
     comments: item.node.edge_media_to_comment.count,
     owner: item.node.owner.id,
     image: item.node.thumbnail_src,
+    link: `https://www.instagram.com/p/${item.node.shortcode}/`,
   }));
 }
 
@@ -60,7 +61,6 @@ async function runETL() {
   const posts = transform(response);
   await loggerInfo(`found: ${posts.length} posts`);
   const newPosts = await getNewPost(posts);
-
   await loggerInfo(`new posts: ${newPosts.length}`);
   await savePosts(newPosts);
 }
