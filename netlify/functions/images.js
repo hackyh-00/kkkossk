@@ -5,6 +5,8 @@ const {
   getPostClassified,
 } = require("../../support/dynamo");
 
+const { deleteImage } = require('../../support/cloudinary')
+
 exports.handler = async function (event, _context) {
   console.log(JSON.stringify(event));
 
@@ -16,6 +18,10 @@ exports.handler = async function (event, _context) {
         statusCode: 400,
       };
     }
+
+    const post = await getPostClassified(id[0], parseInt(taken_at_timestamp[0]))
+
+    await deleteImage(post.Item.public_id)
 
     await deleteClassified(id[0], parseInt(taken_at_timestamp[0]));
 

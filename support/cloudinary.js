@@ -17,6 +17,13 @@ async function uploadImage(url) {
   return response;
 }
 
+async function deleteImage(public_id) {
+  const response = await cloudinary.uploader.destroy(public_id);
+
+  return response;
+}
+
 module.exports = {
   uploadImage,
+  deleteImage,
 };

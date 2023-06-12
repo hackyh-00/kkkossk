@@ -62,12 +62,14 @@ export default function Home() {
       {posts.map((post) => (
         <div key={post.id} style={{ display: "flex", margin: "0 0 40px 0" }}>
           <div style={{ width: 300 }}>
+            <a href={post.secure_url} target="_blank">
             <Image
               src={post.secure_url}
               alt={post.caption}
               width={300}
               height={300}
             />
+            </a>
           </div>
           <div style={{ marginLeft: 20, width: 600 }}>
             <div>
