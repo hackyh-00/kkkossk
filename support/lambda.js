@@ -12,6 +12,19 @@ export const getPosts = async () => {
   return posts.Items;
 };
 
+export const blockUser = async (postId, taken_at_timestamp, username) => {
+  try {
+    await window.fetch(
+      `/.netlify/functions/block-user?id=${postId}&taken_at_timestamp=${taken_at_timestamp}&username=${username}`,
+      {
+        method: "POST",
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const deletePost = async (postId, taken_at_timestamp) => {
   try {
     await window.fetch(

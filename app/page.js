@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { getPosts, deletePost, promotePost } from "../support/lambda";
+import { getPosts, blockUser, deletePost, promotePost } from "../support/lambda";
 import Spinner from "../components/spinner";
 
 export default function Home() {
@@ -38,6 +38,26 @@ export default function Home() {
     setLoading(false);
   };
 
+  const blockClickHandler = async (post) => {
+    if (loading) {
+      return;
+    }
+
+    if (!confirm("sure?")) {
+      return;
+    }
+
+    setLoading(true);
+
+    await blockUser(post.id, post.taken_at_timestamp, post.username)
+
+    await deletePost(post.id, post.taken_at_timestamp);
+
+    await init();
+
+    setLoading(false);
+  }
+
   const promoteClickHandler = async (post) => {
     if (loading) {
       return;
@@ -62,7 +82,7 @@ export default function Home() {
       {posts.map((post) => (
         <div key={post.id} style={{ display: "flex", margin: "0 0 40px 0" }}>
           <div style={{ width: 300 }}>
-            <a href={post.secure_url} target="_blank">
+            <a href={post.secure_url} target="_blank" style={{display: "block"}}>
             <Image
               src={post.secure_url}
               alt={post.caption}
@@ -83,7 +103,7 @@ export default function Home() {
             <div>{post.caption}</div>
             <br />
             <div>
-              user: {post.username || post.owner} <br />
+              user: <a href={`https://www.instagram.com/${post.username || post.owner}/`} target="_blank">{post.username || post.owner} </a><br />
               likes: {post.likes} <br />
               comments: {post.comments} <br />
               taken:{" "}
@@ -94,12 +114,11 @@ export default function Home() {
               url: {post.id}
             </div>
           </div>
-          <div>
+          <div style={{display: "flex", flexDirection: "column", justifyContent: "space-evenly"}}>
             <button
               style={{
                 padding: "20px 40px",
                 width: 160,
-                margin: "0 0 40px 0",
                 cursor: "pointer",
                 backgroundColor: "white",
                 opacity: 0.6,
@@ -111,6 +130,22 @@ export default function Home() {
             >
               Delete
             </button>
+            <button
+              style={{
+                padding: "20px 40px",
+                width: 160,
+                cursor: "pointer",
+                backgroundColor: "white",
+                opacity: 0.6,
+                fontSize: 20,
+                border: "2px solid red",
+                opacity: 0.7,
+              }}
+              onClick={() => blockClickHandler(post)}
+            >
+              Block
+            </button>
+
             <button
               style={{
                 padding: "20px 40px",

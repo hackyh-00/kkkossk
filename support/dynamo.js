@@ -85,6 +85,19 @@ module.exports.savePostPromote = async (data) => {
   return documentClient.put(params).promise();
 };
 
+module.exports.blockUser = async (id, taken_at_timestamp, username) => {
+  const params = {
+    TableName: "instagram_blocked_user",
+    Item: {
+      id,
+      taken_at_timestamp,
+      username,
+    },
+  };
+
+  return documentClient.put(params).promise();
+};
+
 const getData = async (TableName, Limit) => {
   const params = {
     TableName,

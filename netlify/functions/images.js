@@ -8,8 +8,6 @@ const {
 const { deleteImage } = require('../../support/cloudinary')
 
 exports.handler = async function (event, _context) {
-  console.log(JSON.stringify(event));
-
   if (event.httpMethod === "DELETE") {
     const { id, taken_at_timestamp } = event.multiValueQueryStringParameters;
 
